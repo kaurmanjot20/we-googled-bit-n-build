@@ -35,30 +35,25 @@ class Table(models.Model):
         buffer.close()
         
         super().save(*args, **kwargs)
-        
+
+class OrderItem(models.Model):
+    product = models.CharField(max_length=200)
+    quantity = models.IntegerField()
+    price = models.FloatField()
+    total = models.FloatField(blank=True)  
+
+    def __str__(self):
+        return f"{self.product} x {self.quantity}"
+    
+    def save(self, *args, **kwargs):
+        self.total = self.price * self.quantity
+        super().save(*args, **kwargs)
         
 class Order(models.Model):
     table = models.ForeignKey(Table, on_delete=models.CASCADE)
-    order_no = models.AutoField(primary_key=True)  
-    total = models.FloatField()  
+    order_no = models.AutoField(primary_key=True)
+    items = models.ManyToManyField(OrderItem)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"Order for Table {self.table.table_no} on {self.created_at}"
-    
-    def calculate_total(self):
-        total = sum(item.price * item.quantity for item in self.orderitem_set.all())
-        self.total = total
-        self.save()
-
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.CharField(max_length=200)
-    quantity = models.IntegerField()
-    price = models.FloatField()
-
-    def __str__(self):
-        return f"{self.product} x {self.quantity} for Table {self.order.table.table_no}"
-    
-    def get_total_item_price(self):
-        return self.quantity * self.price

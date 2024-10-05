@@ -15,11 +15,16 @@ class Customer(models.Model):
 class CustomerOrder(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     order = models.OneToOneField(Order, on_delete=models.SET_NULL, null=True)
-    total = models.FloatField()
+    total = models.FloatField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"Order for {self.customer.name} on {self.created_at}"
+    
+    def save(self, *args, **kwargs):
+        items = self.order.items.all()
+        self.total = sum([item.total for item in items])
+        super().save(*args, **kwargs)
     
 class CustomerFeedback(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
