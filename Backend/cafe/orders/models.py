@@ -3,16 +3,20 @@ import qrcode
 from io import BytesIO
 from django.core.files import File
 from PIL import Image, ImageDraw
+from django.utils import timezone
+from django.utils.timezone import localtime
+import datetime
+from store.models import Item
 
 # Create your models here.
 
 class Table(models.Model):
     table_no = models.IntegerField()
-    table_status = models.BooleanField(default=False)
+    table_status = models.BooleanField(default=True)
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True)
 
     def __str__(self):
-        return f"Table {self.table_no} - {'Occupied' if self.table_status else 'Available'}"
+        return f"Table {self.table_no} - {'Available' if self.table_status else 'Occupied'}"
     
     def save(self, *args, **kwargs):
         qr_url = f"http://127.0.0.1:8000/orders/{self.table_no}/"
@@ -37,23 +41,31 @@ class Table(models.Model):
         super().save(*args, **kwargs)
 
 class OrderItem(models.Model):
-    product = models.CharField(max_length=200)
+    table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True) 
+    product = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    price = models.FloatField()
     total = models.FloatField(blank=True)  
 
     def __str__(self):
         return f"{self.product} x {self.quantity}"
     
     def save(self, *args, **kwargs):
-        self.total = self.price * self.quantity
+        self.total = self.product.price * self.quantity
         super().save(*args, **kwargs)
         
 class Order(models.Model):
     table = models.ForeignKey(Table, on_delete=models.CASCADE)
     order_no = models.AutoField(primary_key=True)
     items = models.ManyToManyField(OrderItem)
-    created_at = models.DateTimeField(auto_now_add=True)
+    is_completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)
     
     def __str__(self):
-        return f"Order for Table {self.table.table_no} on {self.created_at}"
+        local_timestamp = localtime(self.created_at)
+        created_at = local_timestamp.strftime("%Y-%m-%d %H:%M:%S %Z")
+        return f"Order for Table {self.table.table_no} on {created_at}"
+    
+    def save(self, *args, **kwargs):
+        if self.is_completed:
+            self.items.clear()
+        super().save(*args, **kwargs)

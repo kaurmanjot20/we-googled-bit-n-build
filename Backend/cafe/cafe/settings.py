@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'qr_code',
     'customers',
     'orders',
+    'schema_graph',
+    'store',
     
 ]
 
