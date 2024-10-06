@@ -1,0 +1,14 @@
+{% load static %}
+{% load qr_code %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR CODE</title>
+</head>
+<body>
+    {% qr_from_text "Hello World!" size="T" %}
+</body>
+</html>
