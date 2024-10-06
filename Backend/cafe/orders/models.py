@@ -54,7 +54,7 @@ class OrderItem(models.Model):
         super().save(*args, **kwargs)
         
 class Order(models.Model):
-    table = models.ForeignKey(Table, on_delete=models.CASCADE)
+    table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True)
     order_no = models.AutoField(primary_key=True)
     items = models.ManyToManyField(OrderItem)
     is_completed = models.BooleanField(default=False)
@@ -64,8 +64,4 @@ class Order(models.Model):
         local_timestamp = localtime(self.created_at)
         created_at = local_timestamp.strftime("%Y-%m-%d %H:%M:%S %Z")
         return f"Order for Table {self.table.table_no} on {created_at}"
-    
-    def save(self, *args, **kwargs):
-        if self.is_completed:
-            self.items.clear()
-        super().save(*args, **kwargs)
+

@@ -6,5 +6,11 @@ from .models import *
 
 admin.site.register(Table)
 admin.site.register(OrderItem)
-admin.site.register(Order)
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['table', 'order_no', 'is_completed', 'created_at',]
+    
+    
+
+admin.site.register(Order, OrderAdmin)
 
