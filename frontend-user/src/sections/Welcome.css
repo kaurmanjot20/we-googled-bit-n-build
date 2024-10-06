@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:wght@400;700&display=swap');
+
+.welcome-container {
+  height: 110vh;
+  width: 100vw;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcome-content {
+  text-align: center;
+  
+  padding: 2rem;
+  border-radius: 10px;
+  opacity: 0;
+  transform: translateY(50px);
+  animation: fadeInUp 1.5s ease-out forwards;
+}
+
+/* .welcome-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+} */
+.welcome-text,
+.cafe-name {
+  font-family: 'Dancing Script', cursive;
+  font-size: 5rem;
+  color: #4A2B0F;
+  margin-top: 0;
+  opacity: 0;
+  animation: fadeIn 1.5s ease-out 0.5s forwards;
+}
+
+@media (max-width: 768px) {
+  .welcome-text {
+    font-size: 2rem;
+  }
+
+  .cafe-name {
+    font-size: 3.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-text {
+    font-size: 1.5rem;
+  }
+
+  .cafe-name {
+    font-size: 2.5rem;
+  }
+
+  .welcome-content {
+    padding: 1.5rem;
+  }
+}
+@keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
